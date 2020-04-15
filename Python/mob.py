@@ -18,7 +18,7 @@ class MB(object):
 
     def __init__(self, experiment_name = 'Exp1', port=None, baud=57600):
         print('Opening connection')
-        self.sp = serial.Serial(port='/dev/cu.usbserial-A50285BI', baudrate=baud, timeout=2)
+        self.sp = serial.Serial(port='/dev/ttyUSB1', baudrate=baud, timeout=2)
         self.sp.flushInput()
         self.sp.flushOutput()
         self.rpm_integral = 0
@@ -128,7 +128,7 @@ class MB(object):
         if data[3] > 0:
             data[3] = (1000000/(2*data[3]))*60/2 
             
-        data[4] = ((1/(data[4]/1e6) - 0.1)/(2300*0.95))
+        data[4] = ((data[4]*1000 - 0.1)/(2300*0.95))
         data[5] = ((1/(data[5]/1e6) - 0.1)/(2300*0.95))
         return np.array([data[0], data[1], data[3], data[4], data[5]], dtype = np.float64).reshape(1, 5)
        
