@@ -77,7 +77,7 @@ void setup() {
 void loop() {
     parseSerial();
     parseCommand();
-    sendData();
+    //sendData();
 }
 
 //====================================================================================================//
@@ -159,7 +159,7 @@ void sendData(void){
     sampleNumber += 1;
     CurrentMillis = millis();
     
-    pulse += pulseIn(hallSensor,LOW,100);
+    pulse += pulseIn(hallSensor,LOW,150000);
     pulseDOS += pulseIn(DOS, HIGH, 90000);
     resistorAmbient += resistorReference/((1023*inputVoltage/(analogRead(TempAmbient)*refVoltage))-1);
     resistor1 += resistorReference/((1023*inputVoltage/(analogRead(Temp1)*refVoltage))-1);
