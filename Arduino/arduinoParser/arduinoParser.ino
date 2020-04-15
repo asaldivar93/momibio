@@ -1,3 +1,5 @@
+#include <FreqCount.h>
+
 //======Serial Recive from MATLAB======//
 int command;
 float value;
@@ -33,7 +35,7 @@ float resistorAmbient,
 
 //=====Medicioó de OD ====//
 #define DOS 12
-#define DOF A3
+//#define DOF A3
 unsigned long pulseDOF;
 unsigned long pulseDOS;
 
@@ -58,6 +60,7 @@ int flowValue;
 
 void setup() {
   Serial.begin(57600);
+  FreqCount.begin(50);
   //analogReference(EXTERNAL);
   pinMode(Stirrer, OUTPUT);
   pinMode(Heater, OUTPUT);
@@ -66,7 +69,6 @@ void setup() {
   pinMode(TempAmbient, INPUT);
   pinMode(Temp1, INPUT);
   pinMode(Temp2, INPUT);
-  pinMode(DOF, INPUT);
   pinMode(DOS, INPUT);
   pinMode(hallSensor, INPUT);
   analogWrite(Stirrer, 100);
@@ -75,7 +77,7 @@ void setup() {
 void loop() {
     parseSerial();
     parseCommand();
-    //sendData();
+    sendData();
 }
 
 //====================================================================================================//
@@ -157,15 +159,18 @@ void sendData(void){
     sampleNumber += 1;
     CurrentMillis = millis();
     
-    pulse += pulseIn(hallSensor,LOW,150000);
-    pulseDOF += pulseIn(DOF,HIGH,90000);
+    pulse += pulseIn(hallSensor,LOW,100);
     pulseDOS += pulseIn(DOS, HIGH, 90000);
     resistorAmbient += resistorReference/((1023*inputVoltage/(analogRead(TempAmbient)*refVoltage))-1);
     resistor1 += resistorReference/((1023*inputVoltage/(analogRead(Temp1)*refVoltage))-1);
     resistor2 += resistorReference/((1023*inputVoltage/(analogRead(Temp2)*refVoltage))-1);
   }
+  
+  if (FreqCount.available()){
+    pulseDOF = FreqCount.read();
+  }
   pulse = pulse/sampleNumber;
-  pulseDOF = pulseDOF/sampleNumber;
+  pulseDOF = pulseDOF/50;
   pulseDOS = pulseDOS/sampleNumber;
   resistorAmbient = resistorAmbient/sampleNumber;
   resistor1 = resistor1/sampleNumber;
