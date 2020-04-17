@@ -41,7 +41,7 @@ unsigned long pulseDOS;
 
 //====== Calentador =======//
 
-#define Heater 9
+#define Heater 3
 int Heat,
     heaterValue;
 
@@ -60,11 +60,10 @@ int flowValue;
 
 void setup() {
   Serial.begin(57600);
-  FreqCount.begin(50);
-  //analogReference(EXTERNAL);
+  analogReference(EXTERNAL);
   pinMode(Stirrer, OUTPUT);
   pinMode(Heater, OUTPUT);
-  pinMode(LED_BUILTIN, OUTPUT);
+  //pinMode(LED_BUILTIN, OUTPUT);
   pinMode(Gas, OUTPUT);
   pinMode(TempAmbient, INPUT);
   pinMode(Temp1, INPUT);
@@ -88,7 +87,7 @@ void parseSerial(void){
   char rc;
   while(Serial.available() && newCommand == false){
     rc = Serial.read();
-    if(rc == '\n'){
+    if(rc == 'n'){
       n = 0;
       newCommand = true;
     }
@@ -142,6 +141,7 @@ void parseCommand(void){
 
 void sendData(void){
   // Inicializa cumuladores de las variables a medir
+  FreqCount.begin(50);
   pulse = 0;
   pulseDOF = 0;
   pulseDOS = 0;
@@ -169,6 +169,7 @@ void sendData(void){
   if (FreqCount.available()){
     pulseDOF = FreqCount.read();
   }
+  FreqCount.end();
   pulse = pulse/sampleNumber;
   pulseDOF = pulseDOF/50;
   pulseDOS = pulseDOS/sampleNumber;
