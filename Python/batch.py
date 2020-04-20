@@ -21,7 +21,7 @@ def heat_balance(T,t,Tp,Ta):
     return (U2*A2*(Tp - T) + U3*A1*(Ta - T))/m2*cp2
 
 ##################
-reactor = mob.MB(experiment_name = 'CIR_BI_020420')
+reactor = mob.MB(experiment_name = 'CIR_B1_1704')
 
 #### Initialize Variables
 print('Initializing')
@@ -35,23 +35,19 @@ Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 std_Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 varz_Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 Time = np.zeros((plot_window)) #Time
-t_sample = 8 #Time period between samples in secs
+t_sample = 10 #Time period between samples in secs
 timer_sample = -2*t_sample #Time since last sample
 
     ##### Arrays to save data every sampling rate and
     ##### store last average_window samples
-average_window = 10
+average_window = 12
 temp_data = np.array(np.zeros((average_window, 5)))
 temp_Tw = np.zeros((average_window))
 temp_Time = np.zeros((average_window))
 
-    ##### Gas feed timer
-t_gas_on = 60 #Time gas pump must be on in secs
-t_off_t_on = 20
-t_gas_off = t_off_t_on*t_gas_on #Time gas pump must be off in secs
-t_gas = t_gas_on #
+ ##### Gas feed timer
 timer_gas = 0 #Time pump has been on or off
-gas_on = False #Indicate if the pump was on or off
+
 
 ######
 A1 = 36.71;
@@ -59,7 +55,7 @@ A2 = 13.82;
 U2 = 4.02107E-02
 U3 = 2.99871E-03
 
-time.sleep(5)
+time.sleep(1)
 start_time = time.time()
 j = 1
 
@@ -73,22 +69,19 @@ while(True):
         t_gas_on = parameters[2]
         t_off_t_on = parameters[3]
         t_gas_off = t_off_t_on*t_gas_on
-       
-            
+        t_gas = t_gas_on
+        
+        temp_data = np.append(temp_data, reactor.read(), axis = 0)
+        
         # Estimate water temperature
         if (j == 1):
             j = j + 1
-            try:
-                temp_data = np.append(temp_data, reactor.read(), axis = 0)
-            except:
-                temp_data = np.append(temp_data, np.zeros((1,5)), axis = 0)
-            
             temp_Tw = np.append(temp_Tw, np.array([temp_data[-1,1] + U3*A1*(temp_data[-1,0]  - temp_data[-1,1])/(U2*A2)]), axis = 0)
             temp_Time = np.append(temp_Time, np.array([start_time - start_time]))
             dt = 1
             
             #Start Gas pump
-            #reactor.Gas(100)
+            reactor.Gas(100)
             timer_gas = time.time() - start_time
             t_gas = t_gas_on
             gas_on = True
@@ -107,19 +100,19 @@ while(True):
             #Calculate absorbance
             #temp_data[-1,3] = np.log10(I0/temp_data[-1,3])
             
-            #Control calculation
-            u_T = reactor.T_pid(temp_Tw[-1], temp_Tw[-2], dt)
-            u_rpm = reactor.rpm_pid(temp_data[-1,2], dt)
-            
-            #Control deploy
-            reactor.Heater(u_T)
-            reactor.Stirrer(u_rpm)
-       
+        #Control calculation
+        u_T = reactor.T_pid(temp_Tw[-1], temp_Tw[-2], dt)
+        u_rpm = reactor.rpm_pid(temp_data[-1,2], dt)
+        
+        #Control deploy
+        reactor.Heater(u_T)
+        reactor.Stirrer(u_rpm)
+   
         
         # Turn on and off the gas pump
         if((temp_Time[-1] - timer_gas) > t_gas):
             if gas_on is False:
-                reactor.Gas(70)
+                reactor.Gas(80)
                 timer_gas = time.time() - start_time
                 t_gas = t_gas_on
                 gas_on = True

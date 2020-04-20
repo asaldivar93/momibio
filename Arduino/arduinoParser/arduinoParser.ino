@@ -87,7 +87,7 @@ void parseSerial(void){
   char rc;
   while(Serial.available() && newCommand == false){
     rc = Serial.read();
-    if(rc == 'n'){
+    if(rc == '\n'){
       n = 0;
       newCommand = true;
     }

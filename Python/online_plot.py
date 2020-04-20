@@ -27,18 +27,20 @@ ln_Tw, = ax_Temp.plot([],[]) # Plot Tw
 ln_rpm, = ax_rpm.plot([],[]) # Plot rpm
 
 def init(): 
-    ax_ODF.set_ylim(0,200)
-    ax_ODS.set_ylim(0,150)
-    ax_Temp.set_ylim(20, 30)
+    ax_ODF.set_ylim(0,1)
+    ax_ODS.set_ylim(-3,0)
+    ax_Temp.set_ylim(27.5, 32)
     ax_rpm.set_ylim(700,1800)
 
 
 #Data plot
 def update(i):
-    data = np.loadtxt('CIR_BI_020420_0.txt', delimiter ='\t', skiprows = 1)
+    data = np.loadtxt('CIR_B1_1704_0.txt', delimiter ='\t', skiprows = 0)
+    data2 = np.loadtxt('CIR_B1_1704_1.txt', delimiter ='\t', skiprows = 0)
+    data = np.concatenate((data, data2))
     Time = data[:,0]
-    ODF = data[:,1]
-    ODS = data[:,4]
+    ODF = np.log10(261.32/data[:,1])
+    ODS = np.log10(2/data[:,4])
     Tw = data[:,7]
     rpm = data[:,16]
     

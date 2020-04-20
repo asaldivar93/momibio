@@ -11,21 +11,24 @@ from scipy.signal import savgol_filter
 import matplotlib.pyplot as plot
 
 #Load Data
-data = np.loadtxt('CIR_B1_270320_0.txt', delimiter ='\t')
-data2 = np.loadtxt('CIR_B2_270320_0.txt', delimiter ='\t')
-
+data = np.loadtxt('CIR_B3_020420_0.txt', delimiter ='\t', skiprows = 10)
+data2 = np.loadtxt('CIR_B3_020420_1.txt', delimiter ='\t')
+data3 = np.loadtxt('CIR_B3_020420_2.txt', delimiter ='\t')
+data4 = np.loadtxt('CIR_B3_020420_3.txt', delimiter ='\t')
 
 #Concat Files
-data2[:,0] = data2[:, 0] + data[-1, 0]
+#data2[:,0] = data2[:, 0] + data[-1, 0]
 #data3[:,0] = data3[:, 0] + data2[-1, 0]
 
-data = np.concatenate((data, data2[8:,:]))
+data = np.concatenate((data, data2))
+data = np.concatenate((data, data3))
+data = np.concatenate((data, data4))
+
 #data = np.concatenate((data, data3))
 #data = np.concatenate((data, data4))
 
-Time = data[62:, 0]
-Light_intensity = data[62:,1]
-
+Time = data[:, 0]
+Light_intensity = data[:,1]
 #Smoothing
 
 # interpolate + smooth
@@ -50,7 +53,7 @@ f_axes1 = figure.add_subplot(grid[0:2,:]) # Plot OD
 f_axes2 = figure.add_subplot(grid[2:,0:2]) # Plot LI
 f_axes3 = figure.add_subplot(grid[2:,2:]) # Plot d(DO)/dt
 
-ln1, = f_axes1.plot(Time, O) 
+#ln1, = f_axes1.plot(Time, O) 
 ln2, = f_axes1.plot(Time, sg_O)
 ln4, = f_axes2.plot(Time, oo)
 
