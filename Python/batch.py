@@ -47,7 +47,13 @@ temp_Time = np.zeros((average_window))
 
  ##### Gas feed timer
 timer_gas = 0 #Time pump has been on or off
+gas_on = True
 
+##### Timer OD
+timer_OD = 0
+reactor.Laser(255) 
+laser_on = True
+time_OD = t_sample
 
 ######
 A1 = 36.71;
@@ -69,8 +75,8 @@ while(True):
         t_gas_on = parameters[2]
         t_off_t_on = parameters[3]
         t_gas_off = t_off_t_on*t_gas_on
-        t_gas = t_gas_on
-        
+        t_gas = t_gas_off
+                        
         temp_data = np.append(temp_data, reactor.read(), axis = 0)
         
         # Estimate water temperature
@@ -79,19 +85,7 @@ while(True):
             temp_Tw = np.append(temp_Tw, np.array([temp_data[-1,1] + U3*A1*(temp_data[-1,0]  - temp_data[-1,1])/(U2*A2)]), axis = 0)
             temp_Time = np.append(temp_Time, np.array([start_time - start_time]))
             dt = 1
-            
-            #Start Gas pump
-            reactor.Gas(100)
-            timer_gas = time.time() - start_time
-            t_gas = t_gas_on
-            gas_on = True
-        else:
-            try:
-                temp_data = np.append(temp_data, reactor.read(), axis = 0)
-            except:
-                pass
-            
-            
+        else:       
             temp_Time = np.append(temp_Time,  np.array([time.time() - start_time]))
             T_hat = odeint(heat_balance, temp_Tw[-1] , np.linspace(temp_Time[-2], temp_Time[-1], 10), args = (temp_data[-1,1], temp_data[-1,0]))
             temp_Tw = np.append(temp_Tw, np.array([T_hat[-1]]))
@@ -109,9 +103,24 @@ while(True):
         reactor.Stirrer(u_rpm)
    
         
+        #Turn on and off the Laser
+        if((temp_Time[-1] - timer_OD) > time_OD):
+            if not laser_on:
+                if gas_on:
+                    reactor.Gas(0)  
+                reactor.Laser(255)
+                timer_OD = time.time() - start_time
+                time_OD = t_sample
+                laser_on = True
+            elif(laser_on):
+                reactor.Laser(0)
+                timer_OD = time.time() - start_time
+                time_OD = 50
+                laser_on = False
+       
         # Turn on and off the gas pump
-        if((temp_Time[-1] - timer_gas) > t_gas):
-            if gas_on is False:
+        if((temp_Time[-1] - timer_gas) > t_gas and not laser_on):
+            if not gas_on:
                 reactor.Gas(80)
                 timer_gas = time.time() - start_time
                 t_gas = t_gas_on

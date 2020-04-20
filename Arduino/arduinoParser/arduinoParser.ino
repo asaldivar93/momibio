@@ -1,5 +1,4 @@
 #include <FreqCount.h>
-
 //======Serial Recive from MATLAB======//
 int command;
 float value;
@@ -34,6 +33,7 @@ float resistorAmbient,
       resistor2;
 
 //=====Medicioó de OD ====//
+#define Laser 8
 #define DOS 12
 //#define DOF A3
 unsigned long pulseDOF;
@@ -63,7 +63,7 @@ void setup() {
   analogReference(EXTERNAL);
   pinMode(Stirrer, OUTPUT);
   pinMode(Heater, OUTPUT);
-  //pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(Laser, OUTPUT);
   pinMode(Gas, OUTPUT);
   pinMode(TempAmbient, INPUT);
   pinMode(Temp1, INPUT);
@@ -114,7 +114,7 @@ void parseSerial(void){
 void parseCommand(void){
   if(newCommand){
     if(command == 1){
-      digitalWrite(LED_BUILTIN, value);
+      digitalWrite(Laser, value);
       Serial.println("1");
     }
     else if(command == 2){

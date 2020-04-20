@@ -31,7 +31,7 @@ class MB(object):
         self.file.close()
         time.sleep(2)
            
-    def LED(self,pwm):
+    def Laser(self,pwm):
         self.write('1',pwm)
         return pwm
 
