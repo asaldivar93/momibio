@@ -33,7 +33,7 @@ float resistorAmbient,
       resistor2;
 
 //=====Medicioó de OD ====//
-#define Laser 8
+//#define Laser 5
 #define DOS 12
 //#define DOF A3
 unsigned long pulseDOF;
@@ -60,16 +60,18 @@ int flowValue;
 
 void setup() {
   Serial.begin(57600);
+  //FreqCount.begin(1000);
   analogReference(EXTERNAL);
   pinMode(Stirrer, OUTPUT);
   pinMode(Heater, OUTPUT);
-  pinMode(Laser, OUTPUT);
+  //pinMode(Laser, OUTPUT);
   pinMode(Gas, OUTPUT);
   pinMode(TempAmbient, INPUT);
   pinMode(Temp1, INPUT);
   pinMode(Temp2, INPUT);
   pinMode(DOS, INPUT);
   pinMode(hallSensor, INPUT);
+  //analogWrite(Laser, 255);
   analogWrite(Stirrer, 100);
 }
 
@@ -77,6 +79,10 @@ void loop() {
     parseSerial();
     parseCommand();
     //sendData();
+//    if (FreqCount.available()){
+//      pulseDOF = FreqCount.read();
+//    }
+//    Serial.println(pulseDOF);
 }
 
 //====================================================================================================//
@@ -114,7 +120,7 @@ void parseSerial(void){
 void parseCommand(void){
   if(newCommand){
     if(command == 1){
-      digitalWrite(Laser, value);
+      digitalWrite(LED_BUILTIN, value);
       Serial.println("1");
     }
     else if(command == 2){

@@ -21,7 +21,7 @@ def heat_balance(T,t,Tp,Ta):
     return (U2*A2*(Tp - T) + U3*A1*(Ta - T))/m2*cp2
 
 ##################
-reactor = mob.MB(experiment_name = 'CIR_B1_1704')
+reactor = mob.MB(experiment_name = 'CIR_B3_2004')
 
 #### Initialize Variables
 print('Initializing')
@@ -35,25 +35,26 @@ Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 std_Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 varz_Tw = np.zeros((plot_window)) #Temperature of Water inside the Vessel
 Time = np.zeros((plot_window)) #Time
-t_sample = 10 #Time period between samples in secs
+t_sample = 5 #Time period between samples in secs
 timer_sample = -2*t_sample #Time since last sample
 
     ##### Arrays to save data every sampling rate and
     ##### store last average_window samples
-average_window = 12
+average_window = 10
 temp_data = np.array(np.zeros((average_window, 5)))
 temp_Tw = np.zeros((average_window))
 temp_Time = np.zeros((average_window))
 
  ##### Gas feed timer
 timer_gas = 0 #Time pump has been on or off
-gas_on = True
+gas_on = False
+t_gas = 20*60
 
 ##### Timer OD
-timer_OD = 0
-reactor.Laser(255) 
-laser_on = True
-time_OD = t_sample
+#timer_OD = 0
+#reactor.Laser(255) 
+#laser_on = True
+#time_OD = 6
 
 ######
 A1 = 36.71;
@@ -63,6 +64,7 @@ U3 = 2.99871E-03
 
 time.sleep(1)
 start_time = time.time()
+
 j = 1
 
 print('Experiment Started')
@@ -75,8 +77,8 @@ while(True):
         t_gas_on = parameters[2]
         t_off_t_on = parameters[3]
         t_gas_off = t_off_t_on*t_gas_on
-        t_gas = t_gas_off
-                        
+
+                       
         temp_data = np.append(temp_data, reactor.read(), axis = 0)
         
         # Estimate water temperature
@@ -102,31 +104,18 @@ while(True):
         reactor.Heater(u_T)
         reactor.Stirrer(u_rpm)
    
-        
-        #Turn on and off the Laser
-        if((temp_Time[-1] - timer_OD) > time_OD):
-            if not laser_on:
-                if gas_on:
-                    reactor.Gas(0)  
-                reactor.Laser(255)
-                timer_OD = time.time() - start_time
-                time_OD = t_sample
-                laser_on = True
-            elif(laser_on):
-                reactor.Laser(0)
-                timer_OD = time.time() - start_time
-                time_OD = 50
-                laser_on = False
        
         # Turn on and off the gas pump
-        if((temp_Time[-1] - timer_gas) > t_gas and not laser_on):
-            if not gas_on:
+        if((temp_Time[-1] - timer_gas) > t_gas):
+            if gas_on is False:
                 reactor.Gas(80)
                 timer_gas = time.time() - start_time
                 t_gas = t_gas_on
                 gas_on = True
+          
             elif(gas_on):
                 reactor.Gas(0)
+  
                 timer_gas = time.time() - start_time
                 t_gas = t_gas_off
                 gas_on = False
@@ -139,6 +128,19 @@ while(True):
         if((temp_Time[-1] - timer_sample) > t_sample):
             timer_sample = time.time() - start_time
             
+#            if(time_OD == 6):
+#                if not laser_on:
+#                    if gas_on:
+#                        reactor.Gas(0)  
+#                    reactor.Laser(255)
+#                    laser_on = True
+#                elif(laser_on):
+#                    reactor.Laser(0)
+#                    time_OD = 1
+#                    laser_on = False
+#            else:
+#                time_OD += 1
+                    
             data = np.append(data, np.mean(temp_data, axis = 0, keepdims = True), axis = 0)
             std = np.append(data, np.std(temp_data, axis = 0, keepdims = True), axis = 0)
             varz = np.append(data, np.var(temp_data, axis = 0, keepdims = True), axis = 0)
@@ -161,6 +163,7 @@ while(True):
 
     except KeyboardInterrupt:
         reactor.Heater(0)
+        reactor.Laser(0)
         print('Heater turned off')
         reactor.file.close()
         print('Last Data Saved')
@@ -168,6 +171,7 @@ while(True):
         
     except Exception as e:
         reactor.Heater(0)
+        reactor.Laser(0)
         print('Heater turned off')
         reactor.file.close()
         print('Last Data Saved')

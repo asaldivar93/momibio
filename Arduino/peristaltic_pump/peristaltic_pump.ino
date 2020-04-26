@@ -33,7 +33,7 @@ void loop() {
 
   digitalWrite(pump,HIGH);
   digitalWrite(pump,LOW);
-  delay(4);
+  delay(3);
 //  takeSample = digitalRead(sample);
 //  continuousFlow = digitalRead(continuous);
 //

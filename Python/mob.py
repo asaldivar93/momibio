@@ -26,7 +26,7 @@ class MB(object):
         self.experiment_name = experiment_name
         self.file_number = 0
         self.file_name = self.experiment_name+'_%d.txt' %(self.file_number,)
-        self.max_file_size = 2000000 #File size in bytes
+        self.max_file_size = 5000000 #File size in bytes
         self.file = open(self.file_name, 'w+')
         self.file.close()
         time.sleep(2)
@@ -97,7 +97,7 @@ class MB(object):
         if(stat.st_size < self.max_file_size):
             self.file = open(self.file_name,'a+')
                                                    #Tiempo      , ODF        , ODS      , Tw    , Twall     , rpm   
-            self.file.write("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n"%(Time/3600, ODF, stdodf, varodf, ODS, stdods, varods, Tw, stdtw, vartw, Twall, stdtwall, vartwall, Ta, stdta, varta, rpm))
+            self.file.write("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n"%(Time, ODF, stdodf, varodf, ODS, stdods, varods, Tw, stdtw, vartw, Twall, stdtwall, vartwall, Ta, stdta, varta, rpm))
             self.file.close()
         else:
             self.file.close()
@@ -105,7 +105,7 @@ class MB(object):
             self.file_name = self.experiment_name+'_%d.txt' %(self.file_number,)
             self.file = open(self.file_name,'w+')
                                                    #Tiempo      , ODF        , ODS      , Tw    , Twall     , rpm   
-            self.file.write("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n"%(Time/3600, ODF, stdodf, varodf, ODS, stdods, varods, Tw, stdtw, vartw, Twall, stdtwall, vartwall, Ta, stdta, varta, rpm))
+            self.file.write("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n"%(Time, ODF, stdodf, varodf, ODS, stdods, varods, Tw, stdtw, vartw, Twall, stdtwall, vartwall, Ta, stdta, varta, rpm))
             self.file.close()
         
 

@@ -27,20 +27,21 @@ ln_Tw, = ax_Temp.plot([],[]) # Plot Tw
 ln_rpm, = ax_rpm.plot([],[]) # Plot rpm
 
 def init(): 
-    ax_ODF.set_ylim(0,1)
-    ax_ODS.set_ylim(-3,0)
-    ax_Temp.set_ylim(27.5, 32)
+    ax_ODF.set_ylim(0,1.5)
+    #ax_ODF.set_yscale('log', subsy = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,1])
+    ax_ODS.set_ylim(-2,0)
+    ax_Temp.set_ylim(27.5, 29)
     ax_rpm.set_ylim(700,1800)
 
 
 #Data plot
 def update(i):
-    data = np.loadtxt('CIR_B1_1704_0.txt', delimiter ='\t', skiprows = 0)
-    data2 = np.loadtxt('CIR_B1_1704_1.txt', delimiter ='\t', skiprows = 0)
-    data = np.concatenate((data, data2))
-    Time = data[:,0]
-    ODF = np.log10(261.32/data[:,1])
-    ODS = np.log10(2/data[:,4])
+    data = np.loadtxt('CIR_B3_2004_0.txt', delimiter ='\t', skiprows = 0)
+#    data2 = np.loadtxt('CIR_B1_1704_1.txt', delimiter ='\t', skiprows = 0)
+#    data = np.concatenate((data, data2))
+    Time = data[:,0]/3600
+    ODF = np.log10(15.103/data[:,1])
+    ODS = np.log10(0.473/data[:,4])
     Tw = data[:,7]
     rpm = data[:,16]
     
@@ -60,5 +61,5 @@ def update(i):
     ax_rpm.relim()
     ax_rpm.autoscale_view()
 
-ani = FuncAnimation(figure, update, init_func = init, interval = 8000)    
+ani = FuncAnimation(figure, update, init_func = init, interval = 5000)    
 plot.show()
